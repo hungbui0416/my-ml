@@ -87,3 +87,54 @@ def gradient_descent_houses(X, y, w_in, b_in, alpha, num_iters):
             print(f"{i:9d} {J_hist[-1]:0.5e} {w[0]: 0.1e} {w[1]: 0.1e} {w[2]: 0.1e} {w[3]: 0.1e} {b: 0.1e} {dJ_dw[0]: 0.1e} {dJ_dw[1]: 0.1e} {dJ_dw[2]: 0.1e} {dJ_dw[3]: 0.1e} {dJ_db: 0.1e}")
     
     return w, b, J_hist
+
+def gradient_descent_feng(X, y, w_in, b_in, alpha, num_iters):
+    """ 
+    Performs batch gradient descent to learn parameters. Updates parameters
+    by taking num_iters steps with learning rate alpha
+    Args:
+        X (ndarray(n, d))   : matrix of input variables
+        y (ndarray(n,))     : target values
+        w_in (ndarray(d,))  : initial values of w
+        b_in (scalar)       : initial value of b
+    Returns:
+        w (ndarray(d,))     : updated values of w after running gradient descent
+        b (scalar)          : updated value of w after running gradient descent
+    """
+    w = copy.deepcopy(w_in)
+    b = 0.0
+
+    for i in range(num_iters):
+        dJ_dw, dJ_db = compute_gradient(X, y, w, b)
+
+        w -= alpha * dJ_dw
+        b -= alpha * dJ_db
+
+        if i % (num_iters / 10) == 0:
+            print(f"Iteration {i:6d}, Cost: {compute_cost(X, y, w, b):0.5e}")
+
+    return w, b
+
+def zscore_normalize_features(X, rtn_ms=False):
+    """
+    Returns z-score normalized X by column
+    Args:
+        X (ndarray(n, d))       : matrix of input variables
+    Returns:
+        X_norm (ndarray(n, d))  : input normalized by column
+    """
+    mu = np.mean(X, axis=0)
+    sigma = np.std(X, axis=0)
+    X_norm = (X - mu) / sigma
+
+    if rtn_ms:
+        return (X_norm, mu, sigma)
+    else:
+        return X_norm
+    
+def load_data():
+    data = np.loadtxt("./data/ex1data1.txt", delimiter=',')
+    X = data[:, 0].reshape(-1, 1)
+    y = data[:, 1]
+    return X, y
+    
